@@ -51,7 +51,6 @@ public class ProductBasket {
         }
     }
 
-
     public boolean hasProduct(String name) {
         if (name == null) {
             return false;
@@ -63,7 +62,6 @@ public class ProductBasket {
         }
         return false;
     }
-
 
     public void clearBasket() {
         for (int i = 0; i < basket.length; i++) {
