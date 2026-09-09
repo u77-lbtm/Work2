@@ -3,15 +3,17 @@ package org.skypro.skyshop;
 import org.skypro.skyshop.basket.ProductBasket;
 import org.skypro.skyshop.product.Product;
 import org.skypro.skyshop.product.SimpleProduct;
+import org.skypro.skyshop.product.DiscountedProduct;
 
 public class App {
     public static void main(String[] args) {
         Product milk = new SimpleProduct("Молоко", 80);
         Product bread = new SimpleProduct("Хлеб", 40);
-        Product cheese = new SimpleProduct("Сыр", 250);
-        Product apple = new SimpleProduct("Яблоко", 120);
-        Product juice = new SimpleProduct("Сок", 100);
         Product cake = new SimpleProduct("Торт", 500);
+
+        Product cheese = new DiscountedProduct("Сыр", 300, 10);       // Скидка 10% -> Цена станет 270
+        Product apple = new DiscountedProduct("Яблоко", 100, 20);     // Скидка 20% -> Цена станет 80
+        Product juice = new SimpleProduct("Сок", 100);
         ProductBasket myBasket = new ProductBasket();
         myBasket.addProduct(milk);
         myBasket.addProduct(bread);

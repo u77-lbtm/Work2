@@ -6,7 +6,6 @@ public class ProductBasket {
 
     private final Product[] basket = new Product[5];
 
-
     public void addProduct(Product product) {
         if (product == null) {
             return;
@@ -22,7 +21,6 @@ public class ProductBasket {
         System.out.println("Невозможно добавить продукт");
     }
 
-
     public int getTotalPrice() {
         int total = 0;
         for (Product product : basket) {
@@ -33,24 +31,39 @@ public class ProductBasket {
         return total;
     }
 
+    // Выделенный метод для подсчета специальных товаров
+    public int getSpecialProductsCount() {
+        int count = 0;
+        for (Product product : basket) {
+            if (product != null && product.isSpecial()) {
+                count++;
+            }
+        }
+        return count;
+    }
 
     public void printBasket() {
         boolean isEmpty = true;
 
         for (Product product : basket) {
-            if (product != null) {
-                System.out.println(product.getName() + ": " + product.getPrice());
-                isEmpty = false;
+            if (product == null) {
+                continue;
             }
+
+            isEmpty = false;
+
+            // Здесь автоматически вызовется переопределенный toString() каждого продукта
+            System.out.println(product);
         }
 
         if (isEmpty) {
             System.out.println("в корзине пусто");
         } else {
             System.out.println("Итого: " + getTotalPrice());
+            // Передаем результат выделенного метода БЕЗ использования instanceof
+            System.out.println("Специальных товаров: " + getSpecialProductsCount());
         }
     }
-
 
     public boolean hasProduct(String name) {
         if (name == null) {
@@ -64,10 +77,10 @@ public class ProductBasket {
         return false;
     }
 
-
     public void clearBasket() {
         for (int i = 0; i < basket.length; i++) {
             basket[i] = null;
         }
     }
 }
+
