@@ -18,4 +18,19 @@ public class SimpleProduct extends Product {
     public int getPrice() {
         return this.price;
     }
+    @Override
+    public String getSearchTerm() {
+        return getName();
+    }
+
+    @Override
+    public String getContentType() {
+        return "Товар";
+    }
+    @Override
+    public String toString() {
+        return getName() + ": цена " + getPrice() + " руб.";
+    }
+
+
 }

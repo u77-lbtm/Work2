@@ -7,20 +7,29 @@ public class SpecialProduct extends Product {
 
     public SpecialProduct(String name, int basePrice) {
         super(name);
-
         if (basePrice <= 0) {
             throw new IllegalArgumentException("Цена должна быть больше нуля");
         }
         this.basePrice = basePrice;
     }
+        @Override
+        public String getSearchTerm() {
 
-    // Обязательно реализуем абстрактный метод получения цены
+            return getName();
+        }
+
+        @Override
+        public String getContentType() {
+
+            return "Товар";
+        }
+
     @Override
     public int getPrice() {
         return this.basePrice;
     }
 
-    // Переопределяем признак специального товара
+
     @Override
     public boolean isSpecial() {
         return true;
@@ -30,4 +39,8 @@ public class SpecialProduct extends Product {
     public String toString() {
         return this.getName() + ": Специальный товар " + this.getPrice();
     }
+
 }
+
+
+
