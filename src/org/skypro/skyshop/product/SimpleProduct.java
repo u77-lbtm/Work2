@@ -1,3 +1,4 @@
+
 package org.skypro.skyshop.product;
 
 public class SimpleProduct extends Product {
@@ -7,12 +8,18 @@ public class SimpleProduct extends Product {
 
     public SimpleProduct(String name, int price) {
         super(name);
-        if (price <= 0) {
-            throw new IllegalArgumentException("Цена должна быть больше нуля");
-        }
-        this.price = price;
-    }
+        try {
+            if (price <= 0) {
+                throw new IllegalArgumentException("Цена должна быть больше нуля");
+            }
+            this.price = price;
+            System.out.println("Данные корректны: " + name);
 
+        } catch (IllegalArgumentException ex) {
+            System.err.println("Ошибка при создании продукта: " + ex.getMessage());
+            throw ex;
+        }
+    }
 
     @Override
     public int getPrice() {

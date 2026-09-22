@@ -1,8 +1,4 @@
 package org.skypro.skyshop.product;
-
-
-
-
 import org.skypro.skyshop.search.Searchable;
 
 public abstract class Product implements Searchable {
@@ -10,11 +6,22 @@ public abstract class Product implements Searchable {
     private final String name;
 
     public Product(String name) {
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("Имя продукта не может быть пустым");
+        String temporaryName;
+        try {
+            if (name.isBlank()) {
+                throw new IllegalArgumentException("Имя продукта не может состоять только из пробелов");
+            }
+            temporaryName = name;
+            System.out.println("Данные корректны: " + name);
+
+        } catch (NullPointerException e) {
+            throw new IllegalArgumentException("Имя продукта не может быть null", e);
         }
-        this.name = name;
+
+
+        this.name = temporaryName;
     }
+
 
 
     @Override

@@ -1,3 +1,4 @@
+
 package org.skypro.skyshop.product;
 
 public class DiscountedProduct extends Product {
@@ -6,15 +7,33 @@ public class DiscountedProduct extends Product {
 
     public DiscountedProduct(String name, int basePrice, int discount) {
         super(name);
-        if (basePrice <= 0) {
-            throw new IllegalArgumentException("Базовая цена должна быть больше 0");
+        try {
+            if (basePrice <= 0) {
+                throw new IllegalArgumentException("Базовая цена должна быть больше 0");
+            }
+        } catch (IllegalArgumentException ex) {
+            System.err.println("Ошибка при создании продукта: " + ex.getMessage());
+            throw ex;
         }
+
+
         if (discount < 0 || discount > 100) {
             throw new IllegalArgumentException("Скидка должна быть в диапазоне от 0 до 100%");
         }
-        this.basePrice = basePrice;
-        this.discount = discount;
-    }
+        try {
+            //  скидка 250%
+
+        } catch (IllegalArgumentException ex) {
+
+            System.err.println("Ошибка при создании продукта: " + ex.getMessage());
+            throw ex;
+        }
+
+
+        this.basePrice =basePrice;
+        this.discount =discount;
+
+}
 
     @Override
     public int getPrice() {
@@ -26,7 +45,7 @@ public class DiscountedProduct extends Product {
         return true; // Так как товар со скидкой
     }
 
-    // === РЕАЛИЗАЦИЯ МЕТОДОВ ИНТЕРФЕЙСА SEARCHABLE ===
+
 
     @Override
     public String getSearchTerm() {

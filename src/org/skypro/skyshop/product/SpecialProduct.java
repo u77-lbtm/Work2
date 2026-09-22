@@ -1,3 +1,4 @@
+
 package org.skypro.skyshop.product;
 
 public class SpecialProduct extends Product {

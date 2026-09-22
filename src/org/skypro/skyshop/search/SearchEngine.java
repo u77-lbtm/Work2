@@ -15,7 +15,7 @@ public class SearchEngine {
             return;
         }
         if (currentSize >= database.length) {
-            System.out.println("Ошибка: База данных поискового движка переполнена!");
+            System.out.println("Ошибка: База данных поиского движка переполнена!");
             return;
         }
         database[currentSize] = item;
@@ -25,7 +25,6 @@ public class SearchEngine {
     public Searchable[] search(String query) {
         Searchable[] results = new Searchable[5];
 
-        // Если запрос пустой, сразу возвращаем пустой массив из null
         if (query == null || query.isBlank()) {
             return results;
         }
@@ -33,25 +32,68 @@ public class SearchEngine {
         String lowerCaseQuery = query.toLowerCase();
         int foundCount = 0;
 
-        // Перебираем только заполненные ячейки нашего массива database
         for (int i = 0; i < currentSize; i++) {
             Searchable item = database[i];
 
-            // Используем универсальный метод getSearchTerm() для поиска по товарам и статьям
             if (item.getSearchTerm().toLowerCase().contains(lowerCaseQuery)) {
                 results[foundCount] = item;
                 foundCount++;
 
-                // Если нашли 5 элементов — прекращаем поиск
                 if (foundCount == 5) {
                     break;
                 }
             }
         }
-
         return results;
     }
+
+    /**
+     * Находит объект с наибольшим количеством вхождений поискового запроса (регистронезависимо).
+     */
+    public Searchable findBestResult(String query) throws BestResultNotFound {
+        if (query == null || query.isBlank()) {
+            throw new BestResultNotFound("Пустой поисковый запрос.");
+        }
+
+        Searchable bestMatch = null;
+        int maxOccurrences = 0;
+
+        // Приводим запрос к нижнему регистру один раз перед циклом
+        String lowerCaseQuery = query.toLowerCase();
+
+        for (int i = 0; i < currentSize; i++) {
+            Searchable item = database[i];
+
+            // Приводим поисковый терм элемента к нижнему регистру для регистронезависимого подсчета
+            int occurrences = countOccurrences(item.getSearchTerm().toLowerCase(), lowerCaseQuery);
+
+            if (occurrences > maxOccurrences) {
+                maxOccurrences = occurrences;
+                bestMatch = item;
+            }
+        }
+
+        // Если совпадений не найдено (или maxOccurrences остался равен 0)
+        if (bestMatch == null || maxOccurrences == 0) {
+            throw new BestResultNotFound("Ни один элемент не соответствует запросу: " + query);
+        }
+
+        return bestMatch;
+    }
+
+    private int countOccurrences(String str, String target) {
+        if (str == null || target == null || target.isEmpty()) {
+            return 0;
+        }
+        int count = 0;
+        int index = 0;
+        int substringIndex = str.indexOf(target, index);
+
+        while (substringIndex != -1) {
+            count++;
+            index = substringIndex + target.length();
+            substringIndex = str.indexOf(target, index);
+        }
+        return count;
+    }
 }
-
-
-
