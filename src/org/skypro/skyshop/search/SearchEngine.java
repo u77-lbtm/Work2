@@ -1,8 +1,11 @@
 package org.skypro.skyshop.search;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class SearchEngine {
 
-    // Класс узла для создания связного списка
+    // Внутренний класс узла связного списка базы данных движка
     private static class Node {
         Searchable item;
         Node next;
@@ -13,13 +16,14 @@ public class SearchEngine {
         }
     }
 
-    // ИЗМЕНЕНИЕ: Вместо массива database храним указатель на начало списка
     private Node head = null;
     private int currentSize = 0;
 
-    // Конструктор теперь может быть пустым, так как список динамический.
-    // Если вам обязательно нужно сохранить старую сигнатуру для совместимости,
-    // параметр capacity можно просто проигнорировать.
+    // Конструктор с параметром capacity для полной совместимости с App.java
+    public SearchEngine(int capacity) {
+    }
+
+    // Дополнительный пустой конструктор
     public SearchEngine() {
     }
 
@@ -29,45 +33,42 @@ public class SearchEngine {
             return;
         }
 
-        // ИЗМЕНЕНИЕ: Логика проверки переполнения (currentSize >= database.length) удалена,
-        // так как связный список не имеет фиксированного лимита.
-
         Node newNode = new Node(item);
-        newNode.next = head; // Новый узел указывает на текущее начало списка
-        head = newNode;      // Новый узел становится началом списка
+        newNode.next = head;
+        head = newNode;
         currentSize++;
     }
 
-    public Searchable[] search(String query) {
-        Searchable[] results = new Searchable[5];
+    /**
+     * Ищет и возвращает ВСЕ подходящие элементы без ограничения по количеству.
+     * Использует LinkedList для накопления результатов.
+     */
+    public List<Searchable> search(String query) {
+        // Создаем динамический связный список для результатов
+        List<Searchable> results = new LinkedList<>();
 
         if (query == null || query.isBlank()) {
             return results;
         }
 
         String lowerCaseQuery = query.toLowerCase();
-        int foundCount = 0;
 
-        // ИЗМЕНЕНИЕ: Итерируемся по связному списку вместо массива
+        // Итерируемся по цепочке узлов от начала до конца
         Node current = head;
         while (current != null) {
             Searchable item = current.item;
 
+            // Если нашли совпадение в терме — добавляем без лимитов
             if (item.getSearchTerm().toLowerCase().contains(lowerCaseQuery)) {
-                results[foundCount] = item;
-                foundCount++;
-
-                if (foundCount == 5) {
-                    break;
-                }
+                results.add(item);
             }
-            current = current.next; // Переходим к следующему элементу
+            current = current.next;
         }
         return results;
     }
 
     /**
-     * Находит объект с наибольшим количеством вхождений поискового запроса (регистронезависимо).
+     * Находит объект с наибольшим количеством вхождений поискового запроса.
      */
     public Searchable findBestResult(String query) throws BestResultNotFound {
         if (query == null || query.isBlank()) {
@@ -79,7 +80,6 @@ public class SearchEngine {
 
         String lowerCaseQuery = query.toLowerCase();
 
-        // ИЗМЕНЕНИЕ: Итерируемся по связному списку вместо массива
         Node current = head;
         while (current != null) {
             Searchable item = current.item;
@@ -90,7 +90,7 @@ public class SearchEngine {
                 maxOccurrences = occurrences;
                 bestMatch = item;
             }
-            current = current.next; // Переходим к следующему элементу
+            current = current.next;
         }
 
         if (bestMatch == null || maxOccurrences == 0) {
@@ -116,7 +116,6 @@ public class SearchEngine {
         return count;
     }
 
-    // Вспомогательный метод, если вам нужно знать текущее количество элементов
     public int getCurrentSize() {
         return currentSize;
     }

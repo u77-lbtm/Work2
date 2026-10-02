@@ -8,6 +8,8 @@ import org.skypro.skyshop.product.Article;
 import org.skypro.skyshop.search.Searchable;
 import org.skypro.skyshop.search.SearchEngine;
 import org.skypro.skyshop.search.BestResultNotFound;
+import java.util.LinkedList;
+import java.util.List;
 
 public class App {
     public static void main(String[] args) {
@@ -19,7 +21,8 @@ public class App {
         Product cheese = new DiscountedProduct("Сыр", 300, 10);       // Скидка 10% -> 270
         Product apple = new DiscountedProduct("Яблоко", 100, 20);     // Скидка 20% -> 80
         Product juice = new SimpleProduct("Сок", 100);
-        Product phone = new DiscountedProduct("Orean", 5000, 250);
+        // Исправлено: передаем 25 (процент), чтобы избежать исключения диапазона
+        Product phone = new DiscountedProduct("Orean", 5000, 25);
 
         // 2. Демонстрация работы с корзиной
         System.out.println("=== РАБОТА С КОРЗИНОЙ ===");
@@ -40,14 +43,14 @@ public class App {
         System.out.println("Корзина очищена.");
         myBasket.printBasket();
         System.out.println("Стоимость пустой корзины: " + myBasket.getTotalPrice());
-        System.out.println("Есть ли 'Молоко' в пустой корзине? " + myBasket.hasProduct("Молоко"));
+        System.out.println("Есть ли 'Молоко' in пустой корзине? " + myBasket.hasProduct("Молоко"));
 
         System.out.println("\n=== ДЕМОНСТРАЦИЯ ПОИСКА ===");
         // 3. Создаем статью
         Article article = new Article("Польза молока", "Свежее молоко содержит кальций и витамины. Молоко полезно пить каждый день.");
 
         // 4. Инициализируем поисковый движок
-        SearchEngine searchEngine = new SearchEngine(10);
+        SearchEngine searchEngine = new SearchEngine();
 
         // Добавляем элементы в поисковый движок
         searchEngine.add(milk);
@@ -58,18 +61,19 @@ public class App {
         searchEngine.add(article);
         searchEngine.add(phone);
 
-        // 5. Тестируем базовый метод поиска search (возвращает массив)
+        // 5. Тестируем базовый метод поиска search (возвращает List<Searchable>)
         String query = "молоко";
         System.out.println("Поиск по запросу: '" + query + "'");
-        Searchable[] results = searchEngine.search(query);
+        List<Searchable> results = searchEngine.search(query);
 
-        for (int i = 0; i < results.length; i++) {
-            Searchable item = results[i];
-            if (item != null) {
-                System.out.println("Результат " + (i + 1) + ": " + item.getStringRepresentation());
-            } else {
-                System.out.println("Результат " + (i + 1) + ": [пусто]");
-            }
+        int counter = 1;
+        for (Searchable item : results) {
+            System.out.println("Результат " + counter + ": " + item.getStringRepresentation());
+            counter++; // Добавлен инкремент счетчика
+        }
+
+        if (results.isEmpty()) {
+            System.out.println("Результаты поиска пусты.");
         }
 
         // 6. Проверка метода toString у статьи
@@ -80,49 +84,43 @@ public class App {
         System.out.println("\n=== ТЕСТИРОВАНИЕ НАХОЖДЕНИЯ ЛУЧШЕГО РЕЗУЛЬТАТА ===");
 
         // ТЕСТ А: Ищем существующее слово "молоко"
-        // Оно есть в названии продукта "Молоко" (1 раз) и в статье (2 раза). Должна победить статья.
-        System.out.print("Тест 1 (Поиск 'молоко'): ");
         try {
             Searchable best = searchEngine.findBestResult("молоко");
-            System.out.println("УСПЕХ -> Найдено: " + best.getStringRepresentation());
+            System.out.println("Тест 1 (Поиск 'молоко'): УСПЕХ -> Найдено: " + best.getStringRepresentation());
         } catch (BestResultNotFound e) {
-            System.out.println("ОШИБКА (Не должно было случиться): " + e.getMessage());
+            System.out.println("Тест 1 (Поиск 'молоко'): ОШИБКА: " + e.getMessage());
         }
 
         // Сценарий 2: Поиск слова, которого вообще нет в базе данных
-        System.out.print("Тест 2 (Поиск 'java'): ");
         try {
             Searchable best = searchEngine.findBestResult("java");
-            System.out.println("ОШИБКА -> Метод вернул результат вместо исключения: " + best.getStringRepresentation());
+            System.out.println("Тест 2 (Поиск 'java'): ОШИБКА -> Найдено: " + best.getStringRepresentation());
         } catch (BestResultNotFound e) {
-            System.out.println("УСПЕХ -> Исключение перехвачено. Сообщение: " + e.getMessage());
+            System.out.println("Тест 2 (Поиск 'java'): УСПЕХ -> Исключение перехвачено. Сообщение: " + e.getMessage());
         }
 
-        // Сценарий 3: Поиск с пустым запросом (передача пустой строки)
-        System.out.print("Тест 3 (Поиск пустой строки ''): ");
+        // Сценарий 3: Поиск с пустым запросом
         try {
             searchEngine.findBestResult("");
-            System.out.println("ОШИБКА -> Метод не отреагировал на пустую строку!");
+            System.out.println("Тест 3 (Поиск ''): ОШИБКА -> Метод пропустил пустую строку.");
         } catch (BestResultNotFound e) {
-            System.out.println("УСПЕХ -> Пустая строка вызвала исключение. Сообщение: " + e.getMessage());
+            System.out.println("Тест 3 (Поиск ''): УСПЕХ -> Пустая строка вызвала исключение. Сообщение: " + e.getMessage());
         }
 
-        // Сценарий 4: Поиск по строке, состоящей только из пробелов
-        System.out.print("Тест 4 (Поиск пробелов '   '): ");
+        // Сценарий 4: Поиск по строке из пробелов
         try {
             searchEngine.findBestResult("   ");
-            System.out.println("ОШИБКА -> Метод не отреагировал на пробелы!");
+            System.out.println("Тест 4 (Поиск '   '): ОШИБКА -> Метод пропустил пробелы.");
         } catch (BestResultNotFound e) {
-            System.out.println("УСПЕХ -> Пробелы вызвали исключение. Сообщение: " + e.getMessage());
+            System.out.println("Тест 4 (Поиск '   '): УСПЕХ -> Пробелы вызвали исключение. Сообщение: " + e.getMessage());
         }
 
         // Сценарий 5: Поиск null-запроса
-        System.out.print("Тест 5 (Поиск null): ");
         try {
             searchEngine.findBestResult(null);
-            System.out.println("ОШИБКА -> Метод не выбросил исключение при null!");
+            System.out.println("Тест 5 (Поиск null): ОШИБКА -> Метод пропустил null.");
         } catch (BestResultNotFound e) {
-            System.out.println("УСПЕХ -> null-запрос вызвал исключение. Сообщение: " + e.getMessage());
+            System.out.println("Тест 5 (Поиск null): УСПЕХ -> null-запрос вызвал исключение. Сообщение: " + e.getMessage());
         }
     }
 }
