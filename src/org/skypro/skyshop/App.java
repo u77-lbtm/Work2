@@ -27,22 +27,23 @@ public class App {
         // 2. Демонстрация работы с корзиной
         System.out.println("=== РАБОТА С КОРЗИНОЙ ===");
         ProductBasket myBasket = new ProductBasket();
-        myBasket.addProduct(milk);
+        /* myBasket.addProduct(milk);
         myBasket.addProduct(bread);
         myBasket.addProduct(cheese);
         myBasket.addProduct(apple);
         myBasket.addProduct(juice);
         myBasket.addProduct(cake);
         myBasket.printBasket();
+        */
 
-        System.out.println("Общая стоимость: " + myBasket.getTotalPrice());
+        System.out.println("Общая стоимость: " + myBasket.getGrossPrice());
         System.out.println("Есть ли 'Хлеб'? " + myBasket.hasProduct("Хлеб"));
         System.out.println("Есть ли 'Торт'? " + myBasket.hasProduct("Торт"));
 
         myBasket.clearBasket();
         System.out.println("Корзина очищена.");
         myBasket.printBasket();
-        System.out.println("Стоимость пустой корзины: " + myBasket.getTotalPrice());
+        System.out.println("Стоимость пустой корзины: " + myBasket.getGrossPrice());
         System.out.println("Есть ли 'Молоко' in пустой корзине? " + myBasket.hasProduct("Молоко"));
 
         System.out.println("\n=== ДЕМОНСТРАЦИЯ ПОИСКА ===");

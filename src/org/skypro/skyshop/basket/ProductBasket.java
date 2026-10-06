@@ -1,78 +1,102 @@
 package org.skypro.skyshop.basket;
+
 import org.skypro.skyshop.product.Product;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Iterator;
+import java.util.*;
 
 public class ProductBasket {
 
+    // Ключ: Название товара (String), Значение: Список продуктов с таким названием (List<Product>)
+    // Это позволяет хранить несколько одинаковых товаров (например, 2 пачки молока)
+    private final Map<String, List<Product>> basketMap = new HashMap<>();
 
-    private final LinkedList<Product> basket = new LinkedList<>();
-
+    /**
+     * Добавление продукта в корзину.
+     * Используем computeIfAbsent для создания списка при первом добавлении товара.
+     */
     public void addProduct(Product product) {
         if (product == null) {
-            System.out.println("Нельзя добавить пустой продукт (null).");
             return;
         }
-        basket.add(product);
-        System.out.println("Успешно");
+        // Переводим имя в нижний регистр для единообразия поиска
+        String key = product.getName().toLowerCase();
+
+        // Тот самый паттерн: берем список или создаем новый, если товара еще не было, и добавляем
+        basketMap.computeIfAbsent(key, k -> new ArrayList<>()).add(product);
     }
 
-    public int getTotalPrice() {
+    /**
+     * Считает общую стоимость всех товаров в корзине.
+     */
+    public int getGrossPrice() {
         int total = 0;
-
-        for (Product product : basket) {
-            total += product.getPrice();
+        // Проходим по всем спискам продуктов в нашей Map
+        for (List<Product> products : basketMap.values()) {
+            for (Product product : products) {
+                total += product.getPrice();
+            }
         }
         return total;
     }
 
+    /**
+     * Проверяет, пуста ли корзина.
+     */
+    private boolean isEmpty() {
+        return basketMap.isEmpty();
+    }
+
+    /**
+     * Выводит содержимое корзины на экран.
+     */
     public void printBasket() {
-        if (basket.isEmpty()) {
+        if (isEmpty()) {
             System.out.println("Корзина пуста");
             return;
         }
 
-        for (Product product : basket) {
-            System.out.println(product.getStringRepresentation());
+        // Пробегаемся по всем добавленным продуктам
+        for (List<Product> products : basketMap.values()) {
+            for (Product product : products) {
+                // Вызываем строковое представление продукта (из вашего задания SkyPro)
+                System.out.println(product.getStringRepresentation());
+            }
         }
-        System.out.println("Итого: " + getTotalPrice());
+        System.out.println("Итого: " + getGrossPrice());
     }
 
+    /**
+     * Проверяет наличие продукта в корзине по его имени (регистронезависимо).
+     */
     public boolean hasProduct(String name) {
         if (name == null || name.isBlank()) {
             return false;
         }
-
-        String lowerCaseName = name.toLowerCase();
-        for (Product product : basket) {
-            if (product.getName().toLowerCase().equals(lowerCaseName)) {
-                return true;
-            }
-        }
-        return false;
+        // Поскольку при добавлении мы переводили ключ в lowerCase, проверка занимает O(1)
+        return basketMap.containsKey(name.toLowerCase());
     }
 
+    /**
+     * Полностью очищает корзину.
+     */
     public void clearBasket() {
-        basket.clear();
+        basketMap.clear();
     }
 
+    /**
+     * Удаляет продукты по имени и возвращает список того, что было удалено.
+     */
     public List<Product> removeProductByName(String name) {
         List<Product> removedProducts = new LinkedList<>();
         if (name == null || name.isBlank()) {
             return removedProducts;
         }
-        String lowerCaseName = name.toLowerCase();
-        Iterator<Product> iterator = basket.iterator();
-        while (iterator.hasNext()) {
-            Product product = iterator.next();
-            if (product.getName().toLowerCase().equals(lowerCaseName)) {
-                removedProducts.add(product);
-                iterator.remove();
-            }
+
+        String key = name.toLowerCase();
+        // Если такой товар вообще был в карте — забираем весь список и удаляем его из Map
+        if (basketMap.containsKey(key)) {
+            removedProducts.addAll(basketMap.remove(key));
         }
+
         return removedProducts;
     }
 }
-
-

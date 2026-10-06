@@ -6,33 +6,27 @@ public abstract class Product implements Searchable {
     private final String name;
 
     public Product(String name) {
-        String temporaryName;
-        try {
-            if (name.isBlank()) {
-                throw new IllegalArgumentException("Имя продукта не может состоять только из пробелов");
-            }
-            temporaryName = name;
-            System.out.println("Данные корректны: " + name);
-
-        } catch (NullPointerException e) {
-            throw new IllegalArgumentException("Имя продукта не может быть null", e);
+        // Сначала проверяем на null, чтобы не поймать NullPointerException при вызове isBlank()
+        if (name == null) {
+            throw new IllegalArgumentException("Имя продукта не может быть null");
+        }
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("Имя продукта не может состоять только из пробелов");
         }
 
-
-        this.name = temporaryName;
+        this.name = name;
+        System.out.println("Данные корректны: " + name);
     }
-
-
 
     @Override
     public String getName() {
         return name;
     }
 
+    // Возвращает цену в целых числах (например, в рублях)
     public abstract int getPrice();
 
     public boolean isSpecial() {
         return false;
     }
 }
-
