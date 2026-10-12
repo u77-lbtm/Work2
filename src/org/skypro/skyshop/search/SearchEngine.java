@@ -1,22 +1,14 @@
 package org.skypro.skyshop.search;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class SearchEngine {
-
-    // Внутренний класс узла связного списка базы данных движка
-    private static class Node {
-        Searchable item;
-        Node next;
-
-        Node(Searchable item) {
-            this.item = item;
-            this.next = null;
-        }
-    }
-
-    private Node head = null;
+    // Карта хранит ключи (имена) и списки подходящих объектов Searchable
+    private final TreeMap<String, List<Searchable>> treeMap = new TreeMap<>();
     private int currentSize = 0;
 
     // Конструктор с параметром capacity для полной совместимости с App.java
@@ -33,43 +25,41 @@ public class SearchEngine {
             return;
         }
 
-        Node newNode = new Node(item);
-        newNode.next = head;
-        head = newNode;
+        String key = item.getSearchTerm();
+
+        // Если такого ключа еще нет, создаем для него новый ArrayList
+        if (!treeMap.containsKey(key)) {
+            treeMap.put(key, new ArrayList<>());
+        }
+
+        // Добавляем сам объект в список, привязанный к этому ключу
+        treeMap.get(key).add(item);
         currentSize++;
     }
 
-    /**
-     * Ищет и возвращает ВСЕ подходящие элементы без ограничения по количеству.
-     * Использует LinkedList для накопления результатов.
-     */
     public List<Searchable> search(String query) {
-        // Создаем динамический связный список для результатов
         List<Searchable> results = new LinkedList<>();
 
         if (query == null || query.isBlank()) {
+            // Если запрос пустой, распечатываем всю базу данных в консоль
+            for (Map.Entry<String, List<Searchable>> m : treeMap.entrySet()) {
+                System.out.println(m.getKey() + " " + m.getValue());
+            }
             return results;
         }
 
         String lowerCaseQuery = query.toLowerCase();
 
-        // Итерируемся по цепочке узлов от начала до конца
-        Node current = head;
-        while (current != null) {
-            Searchable item = current.item;
-
-            // Если нашли совпадение в терме — добавляем без лимитов
-            if (item.getSearchTerm().toLowerCase().contains(lowerCaseQuery)) {
-                results.add(item);
+        // Ищем частичные совпадения в ключах TreeMap
+        for (Map.Entry<String, List<Searchable>> m : treeMap.entrySet()) {
+            if (m.getKey().toLowerCase().contains(lowerCaseQuery)) {
+                // Добавляем все объекты из списка этого ключа в результаты
+                results.addAll(m.getValue());
             }
-            current = current.next;
         }
-        return results;
+        return results; // Скобка метода search теперь закрывается здесь корректно!
     }
 
-    /**
-     * Находит объект с наибольшим количеством вхождений поискового запроса.
-     */
     public Searchable findBestResult(String query) throws BestResultNotFound {
         if (query == null || query.isBlank()) {
             throw new BestResultNotFound("Пустой поисковый запрос.");
@@ -77,20 +67,18 @@ public class SearchEngine {
 
         Searchable bestMatch = null;
         int maxOccurrences = 0;
-
         String lowerCaseQuery = query.toLowerCase();
 
-        Node current = head;
-        while (current != null) {
-            Searchable item = current.item;
+        // Итерируемся по значениям (спискам объектов) внутри TreeMap
+        for (List<Searchable> itemsList : treeMap.values()) {
+            for (Searchable item : itemsList) {
+                int occurrences = countOccurrences(item.getSearchTerm().toLowerCase(), lowerCaseQuery);
 
-            int occurrences = countOccurrences(item.getSearchTerm().toLowerCase(), lowerCaseQuery);
-
-            if (occurrences > maxOccurrences) {
-                maxOccurrences = occurrences;
-                bestMatch = item;
+                if (occurrences > maxOccurrences) {
+                    maxOccurrences = occurrences;
+                    bestMatch = item;
+                }
             }
-            current = current.next;
         }
 
         if (bestMatch == null || maxOccurrences == 0) {
@@ -120,3 +108,5 @@ public class SearchEngine {
         return currentSize;
     }
 }
+
+

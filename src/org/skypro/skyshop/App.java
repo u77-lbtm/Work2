@@ -8,8 +8,10 @@ import org.skypro.skyshop.product.Article;
 import org.skypro.skyshop.search.Searchable;
 import org.skypro.skyshop.search.SearchEngine;
 import org.skypro.skyshop.search.BestResultNotFound;
-import java.util.LinkedList;
+
 import java.util.List;
+
+
 
 public class App {
     public static void main(String[] args) {
@@ -27,14 +29,15 @@ public class App {
         // 2. Демонстрация работы с корзиной
         System.out.println("=== РАБОТА С КОРЗИНОЙ ===");
         ProductBasket myBasket = new ProductBasket();
-        /* myBasket.addProduct(milk);
+        myBasket.addProduct(milk);
         myBasket.addProduct(bread);
         myBasket.addProduct(cheese);
         myBasket.addProduct(apple);
         myBasket.addProduct(juice);
         myBasket.addProduct(cake);
         myBasket.printBasket();
-        */
+
+
 
         System.out.println("Общая стоимость: " + myBasket.getGrossPrice());
         System.out.println("Есть ли 'Хлеб'? " + myBasket.hasProduct("Хлеб"));
