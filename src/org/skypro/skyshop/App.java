@@ -8,8 +8,9 @@ import org.skypro.skyshop.product.Article;
 import org.skypro.skyshop.search.Searchable;
 import org.skypro.skyshop.search.SearchEngine;
 import org.skypro.skyshop.search.BestResultNotFound;
+import java.util.Map;
 
-import java.util.List;
+
 
 
 
@@ -65,20 +66,29 @@ public class App {
         searchEngine.add(article);
         searchEngine.add(phone);
 
-        // 5. Тестируем базовый метод поиска search (возвращает List<Searchable>)
+        // 5. Тестируем базовый метод поиска search
         String query = "молоко";
         System.out.println("Поиск по запросу: '" + query + "'");
-        List<Searchable> results = searchEngine.search(query);
+        Map<String, Searchable> results = searchEngine.search(query);
 
         int counter = 1;
-        for (Searchable item : results) {
+        for (Searchable item : results.values()) {
             System.out.println("Результат " + counter + ": " + item.getStringRepresentation());
             counter++; // Добавлен инкремент счетчика
         }
-
+        /*
         if (results.isEmpty()) {
             System.out.println("Результаты поиска пусты.");
+        }*/
+
+        if (results.isEmpty()) {
+            System.out.println("Ничего не найдено.");
+        } else {
+            for (Map.Entry<String, Searchable> entry : results.entrySet()) {
+                System.out.println("Ключ: " + entry.getKey() + ", Объект: " + entry.getValue().getName());
+            }
         }
+
 
         // 6. Проверка метода toString у статьи
         System.out.println("\n=== ПРОВЕРКА TO_STRING У СТАТЬИ ===");

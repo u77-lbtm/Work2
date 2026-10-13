@@ -1,14 +1,11 @@
 package org.skypro.skyshop.search;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class SearchEngine {
-    // Карта хранит ключи (имена) и списки подходящих объектов Searchable
-    private final TreeMap<String, List<Searchable>> treeMap = new TreeMap<>();
+    // Карта хранит ключи (имена) и одиночные подходящие объекты Searchable
+    private final TreeMap<String, Searchable> treeMap = new TreeMap<>();
     private int currentSize = 0;
 
     // Конструктор с параметром capacity для полной совместимости с App.java
@@ -19,30 +16,38 @@ public class SearchEngine {
     public SearchEngine() {
     }
 
+    /**
+     * Метод добавления объекта.
+     */
     public void add(Searchable item) {
         if (item == null) {
             System.out.println("Нельзя добавить пустой объект (null).");
             return;
         }
 
-        String key = item.getSearchTerm();
+        String key = item.getName();
 
-        // Если такого ключа еще нет, создаем для него новый ArrayList
+        // Если такого ключа еще нет, значит это новый уникальный элемент
         if (!treeMap.containsKey(key)) {
-            treeMap.put(key, new ArrayList<>());
+            currentSize++;
         }
 
-        // Добавляем сам объект в список, привязанный к этому ключу
-        treeMap.get(key).add(item);
-        currentSize++;
+        // Добавляем или обновляем объект в карте
+        treeMap.put(key, item);
     }
 
-    public List<Searchable> search(String query) {
-        List<Searchable> results = new LinkedList<>();
+    /**
+     * Метод поиска. Возвращает Map<String, Searchable> и формирует результат через TreeMap.
+     * getSearchTerm() используется для проверки, подходит ли объект под поисковый запрос.
+     * getName() используется как ключ в результирующем TreeMap.
+     */
+    public Map<String, Searchable> search(String query) {
+        // Формируем результат именно через TreeMap
+        Map<String, Searchable> results = new TreeMap<>();
 
         if (query == null || query.isBlank()) {
             // Если запрос пустой, распечатываем всю базу данных в консоль
-            for (Map.Entry<String, List<Searchable>> m : treeMap.entrySet()) {
+            for (Map.Entry<String, Searchable> m : treeMap.entrySet()) {
                 System.out.println(m.getKey() + " " + m.getValue());
             }
             return results;
@@ -50,16 +55,20 @@ public class SearchEngine {
 
         String lowerCaseQuery = query.toLowerCase();
 
-        // Ищем частичные совпадения в ключах TreeMap
-        for (Map.Entry<String, List<Searchable>> m : treeMap.entrySet()) {
-            if (m.getKey().toLowerCase().contains(lowerCaseQuery)) {
-                // Добавляем все объекты из списка этого ключа в результаты
-                results.addAll(m.getValue());
+        // Итерируемся напрямую по объектам Searchable
+        for (Searchable item : treeMap.values()) {
+            // Проверяем соответствие тексту запроса через getSearchTerm()
+            if (item.getSearchTerm().toLowerCase().contains(lowerCaseQuery)) {
+                // Используем item.getName() как ключ в результирующем TreeMap
+                results.put(item.getName(), item);
             }
         }
-        return results; // Скобка метода search теперь закрывается здесь корректно!
+        return results;
     }
 
+    /**
+     * Поиск самого подходящего результата по количеству вхождений.
+     */
     public Searchable findBestResult(String query) throws BestResultNotFound {
         if (query == null || query.isBlank()) {
             throw new BestResultNotFound("Пустой поисковый запрос.");
@@ -69,15 +78,13 @@ public class SearchEngine {
         int maxOccurrences = 0;
         String lowerCaseQuery = query.toLowerCase();
 
-        // Итерируемся по значениям (спискам объектов) внутри TreeMap
-        for (List<Searchable> itemsList : treeMap.values()) {
-            for (Searchable item : itemsList) {
-                int occurrences = countOccurrences(item.getSearchTerm().toLowerCase(), lowerCaseQuery);
+        // Обходим одиночные объекты в карте
+        for (Searchable item : treeMap.values()) {
+            int occurrences = countOccurrences(item.getSearchTerm().toLowerCase(), lowerCaseQuery);
 
-                if (occurrences > maxOccurrences) {
-                    maxOccurrences = occurrences;
-                    bestMatch = item;
-                }
+            if (occurrences > maxOccurrences) {
+                maxOccurrences = occurrences;
+                bestMatch = item;
             }
         }
 
@@ -88,6 +95,9 @@ public class SearchEngine {
         return bestMatch;
     }
 
+    /**
+     * Вспомогательный метод для подсчета вхождений подстроки.
+     */
     private int countOccurrences(String str, String target) {
         if (str == null || target == null || target.isEmpty()) {
             return 0;
@@ -108,5 +118,3 @@ public class SearchEngine {
         return currentSize;
     }
 }
-
-
