@@ -9,9 +9,7 @@ import org.skypro.skyshop.search.Searchable;
 import org.skypro.skyshop.search.SearchEngine;
 import org.skypro.skyshop.search.BestResultNotFound;
 import java.util.Map;
-
-
-
+import java.util.Set;
 
 
 public class App {
@@ -69,26 +67,49 @@ public class App {
         // 5. Тестируем базовый метод поиска search
         String query = "молоко";
         System.out.println("Поиск по запросу: '" + query + "'");
-        Map<String, Searchable> results = searchEngine.search(query);
 
-        int counter = 1;
-        for (Searchable item : results.values()) {
-            System.out.println("Результат " + counter + ": " + item.getStringRepresentation());
-            counter++; // Добавлен инкремент счетчика
-        }
-        /*
-        if (results.isEmpty()) {
-            System.out.println("Результаты поиска пусты.");
-        }*/
+        // Исправлено: метод search возвращает Set<Searchable>, а не Set<String>
+        Set<Searchable> results = searchEngine.search(query);
 
         if (results.isEmpty()) {
             System.out.println("Ничего не найдено.");
         } else {
-            for (Map.Entry<String, Searchable> entry : results.entrySet()) {
-                System.out.println("Ключ: " + entry.getKey() + ", Объект: " + entry.getValue().getName());
+            int counter = 1;
+            // итерируем  по множеству результатов results
+            for (Searchable item : results) {
+                // Исправлено: выводим объект через toString() или его имя и тип контента
+                System.out.println("Результат " + counter + ": [" + item.getContentType() + "] " + item.getName());
+                counter++;
+            }
+
+            System.out.println("\n--- Детальный вывод найденных объектов ---");
+            // Исправлено: так как это Set, а не Map, мы просто выводим свойства каждого объекта
+            for (Searchable item : results) {
+                System.out.println("Объект: " + item.getName() + ", Поисковый термин: " + item.getSearchTerm());
             }
         }
 
+
+        // 5. Тестируем базовый метод поиска search
+       /* String query = "молоко";
+        System.out.println("Поиск по запросу: '" + query + "'");
+        Set<String> results = searchEngine.search(query);
+
+        int counter = 1;
+        for (Searchable item : results.name()) {
+            System.out.println("Результат " + counter + ": " + item.getStringRepresentation());
+            counter++; // Добавлен инкремент счетчика
+        }
+
+
+        if (results.isEmpty()) {
+            System.out.println("Ничего не найдено.");
+        } else {
+            for (Map.Entry<String, Searchable> entry : results.()) {
+                System.out.println("Ключ: " + entry.getKey() + ", Объект: " + entry.getValue().getName());
+            }
+        }
+*/
 
         // 6. Проверка метода toString у статьи
         System.out.println("\n=== ПРОВЕРКА TO_STRING У СТАТЬИ ===");

@@ -1,70 +1,82 @@
-package org.skypro.skyshop.search;
 
-import java.util.Map;
-import java.util.TreeMap;
+package org.skypro.skyshop.search;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 public class SearchEngine {
-    // Карта хранит ключи (имена) и одиночные подходящие объекты Searchable
-    private final TreeMap<String, Searchable> treeMap = new TreeMap<>();
-    private int currentSize = 0;
+
+    private  Set<Searchable> list = new HashSet<>();
+    private int currentSize=0;
 
     // Конструктор с параметром capacity для полной совместимости с App.java
     public SearchEngine(int capacity) {
+        this.list = new HashSet<>(capacity);
     }
 
     // Дополнительный пустой конструктор
     public SearchEngine() {
+        this.list = new HashSet<>();
     }
 
     /**
      * Метод добавления объекта.
      */
-    public void add(Searchable item) {
+    public boolean add(Searchable item) {
         if (item == null) {
             System.out.println("Нельзя добавить пустой объект (null).");
-            return;
+            return list.add(item);
         }
 
-        String key = item.getName();
+
 
         // Если такого ключа еще нет, значит это новый уникальный элемент
-        if (!treeMap.containsKey(key)) {
-            currentSize++;
-        }
 
-        // Добавляем или обновляем объект в карте
-        treeMap.put(key, item);
+
+        // Добавляем или обновляем объект
+        return list.add(item);
     }
 
     /**
-     * Метод поиска. Возвращает Map<String, Searchable> и формирует результат через TreeMap.
+     * Метод поиска. Возвращает Set<Searchable> и формирует результат через.
      * getSearchTerm() используется для проверки, подходит ли объект под поисковый запрос.
-     * getName() используется как ключ в результирующем TreeMap.
      */
-    public Map<String, Searchable> search(String query) {
-        // Формируем результат именно через TreeMap
-        Map<String, Searchable> results = new TreeMap<>();
+    public Set<Searchable> search(String query) {
+        Set<Searchable> results = new HashSet<>();
 
-        if (query == null || query.isBlank()) {
-            // Если запрос пустой, распечатываем всю базу данных в консоль
-            for (Map.Entry<String, Searchable> m : treeMap.entrySet()) {
-                System.out.println(m.getKey() + " " + m.getValue());
-            }
+        if (query == null || query.trim().isEmpty()) {
+
             return results;
         }
 
         String lowerCaseQuery = query.toLowerCase();
 
-        // Итерируемся напрямую по объектам Searchable
-        for (Searchable item : treeMap.values()) {
-            // Проверяем соответствие тексту запроса через getSearchTerm()
-            if (item.getSearchTerm().toLowerCase().contains(lowerCaseQuery)) {
-                // Используем item.getName() как ключ в результирующем TreeMap
-                results.put(item.getName(), item);
+        List<Searchable> matchedList = new ArrayList<>();
+        matchedList.sort(new Comparator<Searchable>() {
+            @Override
+            public int compare(Searchable o1, Searchable o2) {
+                int len1 = o1.getSearchTerm() != null ? o1.getSearchTerm().length() : 0;
+                int len2 = o2.getSearchTerm() != null ? o2.getSearchTerm().length() : 0;
+
+                // Сортировка по убыванию длины (от большего к меньшему)
+                int lengthCompare = Integer.compare(len2, len1);
+
+                if (lengthCompare != 0) {
+                    return lengthCompare;
+                }
+
+                String name1 = o1.getName() != null ? o1.getName() : "";
+                String name2 = o2.getName() != null ? o2.getName() : "";
+                return name1.compareTo(name2);
             }
-        }
-        return results;
+        });
+        return new LinkedHashSet<>(matchedList);
     }
+
+
 
     /**
      * Поиск самого подходящего результата по количеству вхождений.
@@ -79,7 +91,7 @@ public class SearchEngine {
         String lowerCaseQuery = query.toLowerCase();
 
         // Обходим одиночные объекты в карте
-        for (Searchable item : treeMap.values()) {
+        for (Searchable item : list) {
             int occurrences = countOccurrences(item.getSearchTerm().toLowerCase(), lowerCaseQuery);
 
             if (occurrences > maxOccurrences) {
