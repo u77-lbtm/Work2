@@ -2,9 +2,6 @@ package org.skypro.skyshop.basket;
 
 import org.skypro.skyshop.product.Product;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 public class ProductBasket {
 
     // 1. Поле объявлено в корне класса и все методы используют ОДНО имя: basket
@@ -64,12 +61,6 @@ public class ProductBasket {
             return false;
         }
         String lowerCaseName = name.toLowerCase();
-        Map<String, List<String>> productsByCategory = new HashMap<>();
-        List<String> allProducts = productsByCategory.values().stream()
-                .flatMap(Collection::stream) // Раскрывает каждый List<String> в Stream<String>
-                .collect(Collectors.toList());
-
-
         return false;
     }
 
@@ -83,7 +74,7 @@ public class ProductBasket {
     /**
      * Удаляет продукты по имени и возвращает список того, что было удалено.
      */
-    public List<Product> removeProductByName (String name) {
+    public List<Product> removeProductByName (String name){
         List<Product> removedProducts = new ArrayList<>();
         if (name == null || name.isBlank()) {
             return removedProducts;

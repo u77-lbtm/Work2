@@ -30,25 +30,11 @@ public class SearchEngine {
 
     public Set<Searchable> search(String query) {
         if (query == null || query.trim().isEmpty()) {
-            return new java.util.TreeSet<>((o1, o2) ->
-                    Integer.compare(o2.getSearchTerm().length(), o1.getSearchTerm().length()));
         }
-
         String lowerCaseQuery = query.toLowerCase().trim();
 
-        return list.stream()
-                .filter(item -> item != null && item.getSearchTerm() != null &&
-                        item.getSearchTerm().toLowerCase().contains(lowerCaseQuery))
-                .collect(java.util.stream.Collectors.toCollection(() -> new java.util.TreeSet<>(
-                        (o1, o2) -> {
-                 // Сортировка по убыванию длины поискового имени
-                            int res = Integer.compare(o2.getSearchTerm().length(), o1.getSearchTerm().length());
-                  // Если длины равны, сортируем по алфавиту во избежание дубликатов в TreeSet
-                            return res != 0 ? res : o1.getSearchTerm().compareTo(o2.getSearchTerm());
-                        }
-                )));
-    }
-
+            }
+        }
 
     public Searchable findBestResult(String query) throws BestResultNotFound {
         if (query == null || query.trim().isEmpty()) {
