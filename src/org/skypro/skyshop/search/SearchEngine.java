@@ -1,35 +1,26 @@
 package org.skypro.skyshop.search;
 
-import java.util.HashSet;
+import java.util.Comparator;
+import java.util.TreeSet;
+import java.util.List;
 import java.util.Set;
 
+
+
 public class SearchEngine {
-
-    private Set<Searchable> list = new HashSet<>();
-    private int currentSize = 0;
-
-    public SearchEngine(int capacity) {
-        this.list = new HashSet<>(capacity);
-    }
-
-    public SearchEngine() {
-        this.list = new HashSet<>();
-    }
-
-    public boolean add(Searchable item) {
-        if (item == null) {
-            System.out.println("Нельзя добавить пустой объект (null).");
-            return false;
-        }
-        boolean isAdded = list.add(item);
-        if (isAdded) {
-            currentSize++;
-        }
-        return isAdded;
-    }
+    private List<Searchable> list;
 
     public Set<Searchable> search(String query) {
-        Set<Searchable> results = new HashSet<>();
+        // 1. Создаем компаратор, защищенный от коллизий
+        Comparator<Searchable> searchableComparator = Comparator
+                // Сначала сортируем по алфавиту поискового термина
+                .comparing((Searchable s) -> s.getSearchTerm(), Comparator.nullsLast(String::compareToIgnoreCase))
+                // Если термины одинаковые, сортируем по системному хэш-коду, чтобы не потерять разные объекты
+                .thenComparingInt(System::identityHashCode);
+
+        // 2. Инициализируем TreeSet с созданным компаратором
+        Set<Searchable> results = new TreeSet<>(searchableComparator);
+
         if (query == null || query.trim().isEmpty()) {
             return results;
         }
