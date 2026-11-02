@@ -1,6 +1,12 @@
 package org.skypro.skyshop.basket;
 
 import org.skypro.skyshop.product.Product;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.Comparator;
 
 public class ProductBasket {
 
@@ -61,6 +67,11 @@ public class ProductBasket {
             return false;
         }
         String lowerCaseName = name.toLowerCase();
+        for (Product product : basket) {
+            if (product.getName().toLowerCase().equals(lowerCaseName)) {
+                return true;
+            }
+        }
         return false;
     }
 
