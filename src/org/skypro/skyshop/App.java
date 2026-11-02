@@ -148,8 +148,6 @@ public class App {
         } catch (BestResultNotFound e) {
             System.out.println("Тест 5 (Поиск null): УСПЕХ -> null-запрос вызвал исключение. Сообщение: " + e.getMessage());
         }
-        productsByCategory.put("Молочные", List.of("Молоко", "Сыр"));
-        productsByCategory.put("Электроника", List.of( "Orean"));
-        System.out.println(allProducts);
+      
     }
 }
