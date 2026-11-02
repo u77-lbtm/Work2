@@ -29,12 +29,22 @@ public class SearchEngine {
     }
 
     public Set<Searchable> search(String query) {
+        Set<Searchable> results = new HashSet<>();
         if (query == null || query.trim().isEmpty()) {
+            return results;
         }
         String lowerCaseQuery = query.toLowerCase().trim();
 
+        for (Searchable item : list) {
+            if (item != null && item.getSearchTerm() != null) {
+                String itemTerm = item.getSearchTerm().toLowerCase();
+                if (itemTerm.contains(lowerCaseQuery)) {
+                    results.add(item);
+                }
             }
         }
+        return results;
+    }
 
     public Searchable findBestResult(String query) throws BestResultNotFound {
         if (query == null || query.trim().isEmpty()) {
