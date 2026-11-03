@@ -2,6 +2,7 @@ package org.skypro.skyshop.search;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Collection;
 
 public class SearchEngine {
 
@@ -85,5 +86,6 @@ public class SearchEngine {
             index += target.length();
         }
         return count;
+
     }
 }
