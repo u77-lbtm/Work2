@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class ProductBasket {
 
-    // Инициализируем TreeMap. Компаратор теперь сортирует КЛЮЧИ (названия продуктов по длине и алфавиту)
+
     private final Map<String, List<Product>> basket = new TreeMap<>(
             Comparator.comparingInt(String::length)
                     .reversed()
@@ -54,7 +54,7 @@ public class ProductBasket {
             return;
         }
 
-        // Вместо цикла используем плоский стрим и forEach
+
         basket.values().stream()
                 .flatMap(Collection::stream)
                 .forEach(product -> System.out.println(product.getStringRepresentation()));
@@ -69,7 +69,7 @@ public class ProductBasket {
         }
         String lowerCaseName = name.toLowerCase().trim();
 
-        // Заменяем цикл на терминальную операцию anyMatch
+
         return basket.values().stream()
                 .flatMap(Collection::stream)
                 .anyMatch(product -> product.getName().toLowerCase().equals(lowerCaseName));
@@ -91,20 +91,20 @@ public class ProductBasket {
         }
         String lowerCaseName = name.toLowerCase().trim();
 
-        // 1. Сначала находим и сохраняем удаляемые элементы через Stream API
+
         List<Product> removedProducts = basket.values().stream()
                 .flatMap(Collection::stream)
                 .filter(product -> product.getName().toLowerCase().equals(lowerCaseName))
                 .collect(Collectors.toList());
 
-        // 2. Затем безопасно удаляем соответствующие ключи из Map без итераторов
+
         basket.keySet().removeIf(key -> key.toLowerCase().equals(lowerCaseName));
 
         return removedProducts;
     }
 
     /**
-     * Возвращает количество товаров в корзине.
+     * Возвращает общее количество товаров в корзине.
      */
     public long getSpecialCount() {
         return basket.values().stream()
