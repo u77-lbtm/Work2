@@ -73,9 +73,14 @@ public class ProductBasket {
         return removedProducts;
     }
 
+    /**
+     * Возвращает количество специальных товаров в корзине.
+     */
     public long getSpecialCount() {
         return basket.values().stream()
                 .flatMap(Collection::stream)
+                .filter(Product::isSpecial) // Оставляем только товары со специальным статусом
                 .count();
     }
+
 }
