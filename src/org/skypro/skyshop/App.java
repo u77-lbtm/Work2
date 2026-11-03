@@ -9,6 +9,7 @@ import org.skypro.skyshop.product.Article;
 import org.skypro.skyshop.search.SearchEngine;       // Важно для searchEngine
 import org.skypro.skyshop.search.Searchable;         // Важно для переменной best
 import org.skypro.skyshop.search.BestResultNotFound; // Важно для блоков catch
+import java.util.*;
 import java.util.Set;
 
 
@@ -147,5 +148,6 @@ public class App {
         } catch (BestResultNotFound e) {
             System.out.println("Тест 5 (Поиск null): УСПЕХ -> null-запрос вызвал исключение. Сообщение: " + e.getMessage());
         }
+
     }
 }

@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 public class ProductBasket {
 
     // Инициализируем TreeMap. Компаратор теперь сортирует КЛЮЧИ (названия продуктов по длине и алфавиту)
@@ -67,12 +70,23 @@ public class ProductBasket {
         if (name == null || name.isBlank()) {
             return false;
         }
+<<<<<<< HEAD
         String lowerCaseName = name.toLowerCase().trim();
 
         // Заменяем цикл на терминальную операцию anyMatch
         return basket.values().stream()
                 .flatMap(Collection::stream)
                 .anyMatch(product -> product.getName().toLowerCase().equals(lowerCaseName));
+=======
+        String lowerCaseName = name.toLowerCase();
+        Map<String, List<String>> productsByCategory = new HashMap<>();
+        List<String> allProducts = productsByCategory.values().stream()
+                .flatMap(Collection::stream) // Раскрывает каждый List<String> в Stream<String>
+                .collect(Collectors.toList());
+
+
+        return false;
+>>>>>>> parent of 978e911 ("last commit")
     }
 
     /**
@@ -85,7 +99,12 @@ public class ProductBasket {
     /**
      * Удаляет продукты по имени и возвращает список того, что было удалено.
      */
+<<<<<<< HEAD
     public List<Product> removeProductByName(String name) {
+=======
+    public List<Product> removeProductByName (String name) {
+        List<Product> removedProducts = new ArrayList<>();
+>>>>>>> parent of 978e911 ("last commit")
         if (name == null || name.isBlank()) {
             return new ArrayList<>();
         }

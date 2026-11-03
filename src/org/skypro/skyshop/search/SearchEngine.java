@@ -32,10 +32,17 @@ public class SearchEngine {
     public Set<Searchable> search(String query) {
         Set<Searchable> results = new HashSet<>();
         if (query == null || query.trim().isEmpty()) {
+<<<<<<< HEAD
             return results;
+=======
+            return new java.util.TreeSet<>((o1, o2) ->
+                    Integer.compare(o2.getSearchTerm().length(), o1.getSearchTerm().length()));
+>>>>>>> parent of 978e911 ("last commit")
         }
+
         String lowerCaseQuery = query.toLowerCase().trim();
 
+<<<<<<< HEAD
         for (Searchable item : list) {
             if (item != null && item.getSearchTerm() != null) {
                 String itemTerm = item.getSearchTerm().toLowerCase();
@@ -46,6 +53,21 @@ public class SearchEngine {
         }
         return results;
     }
+=======
+        return list.stream()
+                .filter(item -> item != null && item.getSearchTerm() != null &&
+                        item.getSearchTerm().toLowerCase().contains(lowerCaseQuery))
+                .collect(java.util.stream.Collectors.toCollection(() -> new java.util.TreeSet<>(
+                        (o1, o2) -> {
+                 // Сортировка по убыванию длины поискового имени
+                            int res = Integer.compare(o2.getSearchTerm().length(), o1.getSearchTerm().length());
+                  // Если длины равны, сортируем по алфавиту во избежание дубликатов в TreeSet
+                            return res != 0 ? res : o1.getSearchTerm().compareTo(o2.getSearchTerm());
+                        }
+                )));
+    }
+
+>>>>>>> parent of 978e911 ("last commit")
 
     public Searchable findBestResult(String query) throws BestResultNotFound {
         if (query == null || query.trim().isEmpty()) {
